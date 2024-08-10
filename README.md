@@ -10,7 +10,7 @@ Project takes inspiration from the main AIRBNB website.(frontend , backend , dat
 - To run in local environment
 - Clone the repository
 - Run command in terminal - nodemon app.js
-Open browser and type http://localhost:4000/listings
+  Open browser and type http://localhost:4000/listings
 - Yet to add backend functionalities - geocoding(map for the new location created) and search filter for loacations.
-- Contributors are welcomed the most.
+- Contributors are most welcomed.
 - Email - preranahippargi7105@gmail.com
