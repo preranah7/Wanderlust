@@ -1,10 +1,16 @@
 <% layout("/layouts/boilerplate") %>
 
+<script>
+  let mapToken = '<%= process.env.MAP_TOKEN %>'
+  let coordinates = <%- JSON.stringify(listing.geometry.coordinates) %>;
+</script>
+
 <div class="row mt-3">
   <div class="col-8 offset-3">
   <h3><%= listing.title %></h3>
-</div>
-<div class="card col-6 offset-3 show-card listing-card">
+  </div>
+
+ <div class="card col-6 offset-3 show-card listing-card">
   <img 
   src="<%= listing.image.url %>" 
   class="card-img-top show-img" 
@@ -19,7 +25,9 @@
       </p>
     </div>
 </div>
+
 <br>
+
 <% if(currUser && currUser._id.equals(listing.owner._id)) { %>
   <div class="btns mb-3">
     <a href="/listings/<%= listing._id %>/edit" class="btn col-1 offset-3">Edit</a>
@@ -30,14 +38,16 @@
 <% } %> 
 
 <div class="col-8 offset-3" >
-<hr>
+  <hr>
+
   <% if (!currUser) { %>
   <p><i>Let us know how your experience was! Wanna leave a review? <a href="/signup">SignUp</a>/<a href="/login">LogIn</a></i></p>
   <% } %>
+
   <% if (currUser) { %>
     <h4>Leave a Review</h4>
     <form 
-    action="/listings/<%= listing.id %>/reviews" method="POST">
+      action="/listings/<%= listing.id %>/reviews" method="POST">
       <div>
         <fieldset class="starability-slot">
           <h5>Rating:</h5>
@@ -68,8 +78,9 @@
     <hr>
   <% } %>
     
-  <p><b>All Reviews</b></p>
+  <% if (listing.reviews.length > 0) { %>
     <div class="row">
+    <p><b>All Reviews</b></p>
     <% for(review of listing.reviews) { %>
       <div class="card mb-3 col-5 ms-3 ">
         <div class="card-body">
@@ -83,6 +94,37 @@
         </form>
       </div>
     <% } %>
-    </div>    
+    </div>   
+  <% } %> 
+  </div>
+
+
+  <div class="col-6 offset-3 mb-3 mt-3">
+    <h3>Where you'll be</h3>
+  <div id="map"></div>
   </div>
 </div>
+
+<script>
+const key = mapToken;
+let map = L.map('map').setView([coordinates[1],coordinates[0]], 9);
+L.tileLayer(`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${key}`,
+{
+tileSize: 512,
+zoomOffset: -1,
+minZoom: 2,
+attribution: "\u003ca href=\"https://www.maptiler.com/copyright/\" target=\"_blank\"\u003e\u0026copy; MapTiler\u003c/a\u003e \u003ca href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\"\u003e\u0026copy; OpenStreetMap contributors\u003c/a\u003e",
+crossOrigin: true
+}).addTo(map);
+console.log([coordinates[1],coordinates[0]])
+let marker = L.marker([coordinates[1],coordinates[0]]).addTo(map);
+let popup = L.popup();
+function onMapClick() {
+    popup
+    .setLatLng([coordinates[1],coordinates[0]])
+    .setContent("Exact location provided after booking.")
+    .openOn(map);
+}
+map.on('click', onMapClick);
+
+</script>
